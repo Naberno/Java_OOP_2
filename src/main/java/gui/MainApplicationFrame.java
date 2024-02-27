@@ -3,8 +3,6 @@ package gui;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -15,24 +13,19 @@ import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.JOptionPane;
 
 import log.Logger;
 
 /**
- * Класс, представляющий главное окно приложения.
+ * Что требуется сделать:
+ * 1. Метод создания меню перегружен функционалом и трудно читается. 
+ * Следует разделить его на серию более простых методов (или вообще выделить отдельный класс).
+ *
  */
 public class MainApplicationFrame extends JFrame
 {
-    /**
-     * Панель для дочерних окон.
-     */
     private final JDesktopPane desktopPane = new JDesktopPane();
-
-
-    /**
-     * Конструктор класса.
-     */
+    
     public MainApplicationFrame() {
         //Make the big window be indented 50 pixels from each edge
         //of the screen.
@@ -51,38 +44,11 @@ public class MainApplicationFrame extends JFrame
         GameWindow gameWindow = new GameWindow();
         gameWindow.setSize(400,  400);
         addWindow(gameWindow);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                confirmExit();
-            }
-        });
 
         setJMenuBar(generateMenuBar());
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
-
-
-    /**
-     * Показывает диалоговое окно для подтверждения выхода из приложения.
-     * Если пользователь подтверждает выход, приложение завершается.
-     */
-    private void confirmExit() {
-        int result = JOptionPane.showConfirmDialog(this,
-                "Вы уверены?", "Выход",
-                JOptionPane.YES_NO_OPTION);
-        if (result == JOptionPane.YES_OPTION) {
-            // Выход из приложения
-            System.exit(0);
-        }
-    }
-
-
-    /**
-     * Создает и настраивает окно журнала.
-     *
-     * @return Объект класса LogWindow.
-     */
+    
     protected LogWindow createLogWindow()
     {
         LogWindow logWindow = new LogWindow(Logger.getDefaultLogSource());
@@ -93,12 +59,7 @@ public class MainApplicationFrame extends JFrame
         Logger.debug("Протокол работает");
         return logWindow;
     }
-
-    /**
-     * Добавляет дочернее окно на панель дочерних окон.
-     *
-     * @param frame Дочернее окно.
-     */
+    
     protected void addWindow(JInternalFrame frame)
     {
         desktopPane.add(frame);
@@ -133,12 +94,7 @@ public class MainApplicationFrame extends JFrame
 // 
 //        return menuBar;
 //    }
-
-    /**
-     * Создает и настраивает панель меню.
-     *
-     * @return Объект класса JMenuBar.
-     */
+    
     private JMenuBar generateMenuBar()
     {
         JMenuBar menuBar = new JMenuBar();
@@ -179,27 +135,11 @@ public class MainApplicationFrame extends JFrame
             testMenu.add(addLogMessageItem);
         }
 
-        JMenuItem exitItem = new JMenuItem("Выход", KeyEvent.VK_X | KeyEvent.VK_ALT);
-        exitItem.setMaximumSize(new Dimension(60, 20));
-        exitItem.addActionListener((event) -> {
-            int result = JOptionPane.showConfirmDialog(null, "Вы уверены?", "Выход",
-                    JOptionPane.YES_NO_OPTION);
-            if(result == JOptionPane.YES_OPTION) {
-                System.exit(0);
-            }
-        });
-
-        menuBar.add(exitItem);
         menuBar.add(lookAndFeelMenu);
         menuBar.add(testMenu);
         return menuBar;
     }
-
-    /**
-     * Устанавливает режим отображения приложения.
-     *
-     * @param className Имя класса LookAndFeel.
-     */
+    
     private void setLookAndFeel(String className)
     {
         try
